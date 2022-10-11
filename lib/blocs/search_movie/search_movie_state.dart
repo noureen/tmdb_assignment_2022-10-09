@@ -1,12 +1,13 @@
 part of 'search_movie_bloc.dart';
 
-abstract class SearchMovieState /*extends Equatable*/ {
+abstract class SearchMovieState extends Equatable {
   const SearchMovieState();
 
   @override
   List<Object> get props => [];
 }
 
+//initial state
 class SearchMovieInitState extends SearchMovieState {
   SearchMovieInitState();
 
@@ -14,6 +15,7 @@ class SearchMovieInitState extends SearchMovieState {
   List<Object> get props => [];
 }
 
+//load search results
 class LoadSearchMovieState extends SearchMovieState {
   final List<MoviesModel>? movieList;
   final bool? isLastPage;
@@ -28,14 +30,14 @@ class LoadSearchMovieState extends SearchMovieState {
   List<Object> get props => [nextPageKey ?? 0];
 }
 
-class SearchMovieStartState extends SearchMovieState {}
-
+//End state of API calls
 class SearchMovieEndState extends SearchMovieState {
   bool isSuccess;
 
   SearchMovieEndState({required this.isSuccess});
 }
 
+//In case of error like no data found
 class SearchMovieErrorState extends SearchMovieState {
   final errorMsg;
 
@@ -45,6 +47,7 @@ class SearchMovieErrorState extends SearchMovieState {
   List<Object> get props => [errorMsg];
 }
 
+//show loader
 class SearchShowProgressState extends SearchMovieState {
   const SearchShowProgressState();
 
@@ -52,6 +55,7 @@ class SearchShowProgressState extends SearchMovieState {
   List<Object> get props => [];
 }
 
+//hide loader
 class SearchHideProgressState extends SearchMovieState {
   const SearchHideProgressState();
 
@@ -59,6 +63,7 @@ class SearchHideProgressState extends SearchMovieState {
   List<Object> get props => [];
 }
 
+//no movies found against query
 class NoSearchMovieFoundState extends SearchMovieState {
   NoSearchMovieFoundState();
 
@@ -66,8 +71,9 @@ class NoSearchMovieFoundState extends SearchMovieState {
   List<Object> get props => [];
 }
 
+//in case internet is not connected
 class NoInternetState extends SearchMovieState {
-  const  NoInternetState();
+  const NoInternetState();
 
   @override
   List<Object> get props => [];

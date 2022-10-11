@@ -23,6 +23,7 @@ class FetchSearchMovieEvent extends SearchMovieEvent {
 }
 
 
+//whenever query is updated from search fied of header widget
 class QueryEvent extends SearchMovieEvent {
   final String? query;
 

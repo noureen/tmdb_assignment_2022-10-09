@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:the_movies_db_app/constants/constants.dart';
 import 'package:the_movies_db_app/screens/dashboard/widgets/item_movies.dart';
 import 'package:the_movies_db_app/widgets/footer.dart';
@@ -118,6 +117,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+
+  //if there is no data/movie
   Widget get noMovies => SizedBox(
         child: Center(
           child: Text(
@@ -127,6 +128,7 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       );
 
+  //checking to update pagination controller last and more pages
   _updatePagination(
       bool? isLastPage, List<MoviesModel>? movies, int? nextPageKey) {
     if (nextPageKey == 2) {
@@ -140,6 +142,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
+  //reset Pagination Controller
   _resetPagination() {
     _isLastPage = false;
     _pagingController?.itemList?.clear();

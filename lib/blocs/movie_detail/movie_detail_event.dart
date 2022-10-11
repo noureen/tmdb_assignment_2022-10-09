@@ -17,15 +17,15 @@ class FetchMovieDetailEvent extends MovieDetailEvent {
   FetchMovieDetailEvent({required this.movieId});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [movieId ?? 0];
 }
 
-//Event to fetch movies list
+//Event to fetch movies detail from DB
 class FetchMovieDetailDBEvent extends MovieDetailEvent {
   final int? movieId;
 
   FetchMovieDetailDBEvent({required this.movieId});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [movieId ?? 0];
 }

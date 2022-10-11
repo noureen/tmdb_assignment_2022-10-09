@@ -14,6 +14,7 @@ import '../../widgets/header.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+//SearchPage to get searches
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
 
@@ -90,7 +91,6 @@ class _SearchPageState extends State<SearchPage> {
         color: bodyGreyColor,
         child: BlocBuilder<SearchMovieBloc, SearchMovieState>(
             builder: (BuildContext context, SearchMovieState state) {
-
           if (state is LoadSearchMovieState && _pagingController != null) {
             _updatePagination(
                 state.isLastPage, state.movieList, state.nextPageKey);
@@ -117,37 +117,51 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget get searchMovies =>  SizedBox(
+  //initial/default msg
+  Widget get searchMovies => SizedBox(
         child: Center(
-          child: Text(strSearchMovies, style: mediumTextMsgs,),
+          child: Text(
+            strSearchMovies,
+            style: mediumTextMsgs,
+          ),
         ),
       );
 
-  Widget get noMovies =>  SizedBox(
+  //if no movie found against search
+  Widget get noMovies => SizedBox(
         child: Center(
-          child: Text(strNoItemFound, style: mediumTextMsgs,),
+          child: Text(
+            strNoItemFound,
+            style: mediumTextMsgs,
+          ),
         ),
       );
 
-  Widget get noInternet =>  SizedBox(
+  //If no internet
+  Widget get noInternet => SizedBox(
         child: Center(
-          child: Text(strNoInternet, style: mediumTextMsgs,),
+          child: Text(
+            strNoInternet,
+            style: mediumTextMsgs,
+          ),
         ),
       );
 
+  //checking to update pagination controller last and more pages
   _updatePagination(
-      bool? lastPage, List<MoviesModel>? movies, int? nextPageKey) {
+      bool? isLastPage, List<MoviesModel>? movies, int? nextPageKey) {
     if (nextPageKey == 2) {
       _resetPagination();
     }
-    if ((lastPage ?? false) && !_isLastPage) {
+    if ((isLastPage ?? false) && !_isLastPage) {
       _pagingController?.appendLastPage(movies ?? []);
       _isLastPage = true;
-    } else if (!(lastPage ?? false)) {
+    } else if (!(isLastPage ?? false)) {
       _pagingController?.appendPage(movies ?? [], nextPageKey);
     }
   }
 
+  //reset Pagination Controller
   _resetPagination() {
     _isLastPage = false;
     _pagingController?.itemList?.clear();

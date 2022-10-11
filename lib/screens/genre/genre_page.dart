@@ -96,6 +96,8 @@ class _GenrePageState extends State<GenrePage> {
     );
   }
 
+
+  //if no item found / error against api call
   Widget get noItemFound => SizedBox(
         child: Center(
           child: Text(
@@ -105,6 +107,8 @@ class _GenrePageState extends State<GenrePage> {
         ),
       );
 
+
+  //If no internet
   Widget get noInternet => SizedBox(
         child: Center(
           child: Text(

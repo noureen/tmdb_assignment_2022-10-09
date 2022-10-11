@@ -24,7 +24,7 @@ class FetchUpcomingMoviesEvent extends UpcomingMoviesEvent {
 }
 
 
-//Event to fetch movies list
+//Event to fetch movies list from DB
 class FetchUpcomingMoviesDBEvent extends UpcomingMoviesEvent {
   final bool? loadFirstPage;
 

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/model/movies/movies_model.dart';
 import '../../repository/movie_db/movies_db_repo.dart';
@@ -38,6 +37,9 @@ class UpcomingMoviesBloc
       if (event is UpcomingMoviesInitEvent) {
         emit(UpcomingMoviesInitState());
       } else if (event is FetchUpcomingMoviesEvent) {
+        /*Here I am checking if internet is connected then API code will be execute otherwise
+        data from DB will be load with pagination. From page there will be always call to API fetch event
+        but on BLOC side connectivity will be checked. */
         var connectivityResult = await (Connectivity().checkConnectivity());
         if (connectivityResult == ConnectivityResult.none) {
           add(FetchUpcomingMoviesDBEvent(loadFirstPage: event.loadFirstPage));
@@ -54,6 +56,9 @@ class UpcomingMoviesBloc
     FetchUpcomingMoviesDBEvent event,
     UpcomingMoviesState state,
   ) async {
+    /*If there is special request from page to load first page of data therefore loadFirstPage is checked here.
+    * If there is no special call from page then lastLoadType will be check like if last load type was from API then for DB call
+    * pagination should be reset */
     if (event.loadFirstPage ?? false || loadTypeData == LoadType.network) {
       _resetPagination();
       emit(const MoviesShowProgressState());
@@ -72,28 +77,18 @@ class UpcomingMoviesBloc
       emit(const MoviesHideProgressState());
       _upcomingMoviesList ??= [];
       _upcomingMoviesList?.clear();
+
+      //get movie from DB
       list
           ?.map((movieData) => _upcomingMoviesList?.add((movieData.movie)!))
           .toList();
-      loadTypeData = LoadType.db;
+
+      loadTypeData = LoadType.db; //last loaded data type
       emit(LoadUpcomingMoviesState(
           isLastPage: _currentPage >= _totalNumPages,
           nextPageKey: _currentPage,
           movieList: _upcomingMoviesList));
     }
-  }
-
-  _getTotalPagesInMovieDb() async {
-    final list = await _moviesDbRepo.getMovies();
-    _totalNumItems = list?.length ?? 0;
-    _totalNumPages = _totalNumItems ~/ 10;
-    _totalNumPages = _totalNumPages == 0 ? 1 : _totalNumPages;
-  }
-
-  _resetPagination() {
-    _currentPage = 1;
-    _totalNumPages = 0;
-    _upcomingMoviesList?.clear();
   }
 
   //Event to fetch Movies List
@@ -102,6 +97,9 @@ class UpcomingMoviesBloc
     UpcomingMoviesState state,
   ) async {
     try {
+      /*If there is special request from page to load first page of data therefore loadFirstPage is checked here.
+    * If there is no special call from page then lastLoadType will be check like if last load type was DB then for API call
+    * pagination should be reset */
       if (event.loadFirstPage ?? false || loadTypeData == LoadType.db) {
         _resetPagination();
         emit(const MoviesShowProgressState());
@@ -118,6 +116,7 @@ class UpcomingMoviesBloc
             (response.results?.isNotEmpty ?? false)) {
           _upcomingMoviesList ??= [];
           _upcomingMoviesList?.addAll(response.results!);
+          //insert data to db
           _upcomingMoviesList?.map((movie) {
             _moviesDbRepo.insertMovies(id: (movie.id)!, movie: movie);
           }).toList();
@@ -134,5 +133,18 @@ class UpcomingMoviesBloc
     } on Error {
       emit(UpcomingMoviesEndState(isSuccess: false));
     }
+  }
+
+  _getTotalPagesInMovieDb() async {
+    final list = await _moviesDbRepo.getMovies();
+    _totalNumItems = list?.length ?? 0;
+    _totalNumPages = _totalNumItems ~/ 10;
+    _totalNumPages = _totalNumPages == 0 ? 1 : _totalNumPages;
+  }
+
+  _resetPagination() {
+    _currentPage = 1;
+    _totalNumPages = 0;
+    _upcomingMoviesList?.clear();
   }
 }

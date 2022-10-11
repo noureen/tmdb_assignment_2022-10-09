@@ -38,7 +38,7 @@ class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
     });
   }
 
-  //Event to fetch Movie Detail
+  //Event to fetch Movie Detail from DB
   Future<void> _mapFetchMovieDetailDBEvent(
     FetchMovieDetailDBEvent event,
     MovieDetailState state,
@@ -58,7 +58,7 @@ class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
     }
   }
 
-  //Event to fetch Movie Detail
+  //Event to fetch Movie Detail with 2 APIs call 1- movieDetail 2-movieImages
   Future<void> _mapMovieDetailEvent(
     FetchMovieDetailEvent event,
     MovieDetailState state,
@@ -72,11 +72,15 @@ class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
       ]);
       emit(const DetailHideProgressState());
       if (response[0] != null) {
+        //Insert movie detail to db
         _moviesDbRepo.insertMovieDetail(
             id: event.movieId ?? 0, movie: response[0] as MovieDetail);
+        //Insert movie images to db
         if (response[1] != null) {
           _moviesDbRepo.insertMovieImages(
               id: event.movieId ?? 0, movie: response[1] as MoviesImages);
+
+          //update detail state
           emit(LoadMovieDetailState(
               movieDetail: response[0] as MovieDetail,
               moviesImages: response[1] as MoviesImages));

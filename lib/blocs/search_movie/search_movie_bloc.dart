@@ -1,26 +1,23 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/model/movies/movies_model.dart';
 import '../../repository/movie_db/movies_db_repo.dart';
 import '../../repository/movie_search/search_movies_repository.dart';
 import '../../utils/utility.dart';
-import '../upcoming_movies/upcoming_movies_bloc.dart';
 
 part 'search_movie_event.dart';
 
 part 'search_movie_state.dart';
-
-
 
 class SearchMovieBloc extends Bloc<SearchMovieEvent, SearchMovieState> {
   final SearchMovieRepository _searchMovieRepository;
   final MoviesDbRepo _moviesDbRepo;
   int _totalNumPages = 0;
   int _currentPage = 1;
-  LoadType loadTypeData = LoadType.none;
-  List<MoviesModel>? _upcomingMoviesList;
+  List<MoviesModel>? _searchMovieList;
   String? query;
 
   SearchMovieBloc({
@@ -53,7 +50,9 @@ class SearchMovieBloc extends Bloc<SearchMovieEvent, SearchMovieState> {
     SearchMovieState state,
   ) async {
     try {
-      if (event.loadFirstPage ?? false || loadTypeData == LoadType.db) {
+      
+      //reset pagination of there is any reload or the last loaded data was from db
+      if (event.loadFirstPage ?? false) {
         _resetPagination();
         emit(const SearchShowProgressState());
       }
@@ -61,22 +60,22 @@ class SearchMovieBloc extends Bloc<SearchMovieEvent, SearchMovieState> {
       final response = await _searchMovieRepository.fetchSearchMovie(
           page: _currentPage, query: query);
       emit(const SearchHideProgressState());
-      loadTypeData = LoadType.network;
+  
 
       if (response != null) {
         _totalNumPages = response.totalPages ?? 0;
         _currentPage++;
         if (response.results != null &&
             (response.results?.isNotEmpty ?? false)) {
-          _upcomingMoviesList ??= [];
-          _upcomingMoviesList?.addAll(response.results!);
-          _upcomingMoviesList?.map((movie) {
+          _searchMovieList ??= [];
+          _searchMovieList?.addAll(response.results!);
+          _searchMovieList?.map((movie) {//write to database
             _moviesDbRepo.insertMovies(id: (movie.id)!, movie: movie);
           }).toList();
           emit(LoadSearchMovieState(
-              isLastPage: _currentPage >= _totalNumPages,
-              nextPageKey: _currentPage,
-              movieList: _upcomingMoviesList));
+              isLastPage: _currentPage >= _totalNumPages,//check if any remaining number of pages
+              nextPageKey: _currentPage,//current page key for pagination
+              movieList: _searchMovieList));
           return;
         }
       }
@@ -92,6 +91,6 @@ class SearchMovieBloc extends Bloc<SearchMovieEvent, SearchMovieState> {
   _resetPagination() {
     _currentPage = 1;
     _totalNumPages = 0;
-    _upcomingMoviesList?.clear();
+    _searchMovieList?.clear();
   }
 }

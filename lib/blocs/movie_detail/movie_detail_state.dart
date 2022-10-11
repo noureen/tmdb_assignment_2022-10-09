@@ -7,40 +7,43 @@ abstract class MovieDetailState extends Equatable {
   List<Object> get props => [];
 }
 
+//initial state
 class MovieDetailInitState extends MovieDetailState {
-  MovieDetailInitState();
+  const MovieDetailInitState();
 
   @override
   List<Object> get props => [];
 }
 
+//State to load detail and images of movie
 class LoadMovieDetailState extends MovieDetailState {
   final MovieDetail? movieDetail;
   final MoviesImages? moviesImages;
 
-  LoadMovieDetailState({this.movieDetail, this.moviesImages});
+  const LoadMovieDetailState({this.movieDetail, this.moviesImages});
 
   @override
   List<Object> get props => [movieDetail ?? [], moviesImages ?? []];
 }
 
-class MovieDetailStartState extends MovieDetailState {}
-
+//End state of API call
 class MovieDetailEndState extends MovieDetailState {
-  bool isSuccess;
+  final bool isSuccess;
 
-  MovieDetailEndState({required this.isSuccess});
+  const MovieDetailEndState({required this.isSuccess});
 }
 
+//Error State
 class MovieDetailErrorState extends MovieDetailState {
-  final errorMsg;
+  final String errorMsg;
 
-  MovieDetailErrorState({required this.errorMsg});
+  const MovieDetailErrorState({required this.errorMsg});
 
   @override
   List<Object> get props => [errorMsg];
 }
 
+//Show Loader
 class DetailShowProgressState extends MovieDetailState {
   const DetailShowProgressState();
 
@@ -48,6 +51,7 @@ class DetailShowProgressState extends MovieDetailState {
   List<Object> get props => [];
 }
 
+//Hide Loader
 class DetailHideProgressState extends MovieDetailState {
   const DetailHideProgressState();
 
