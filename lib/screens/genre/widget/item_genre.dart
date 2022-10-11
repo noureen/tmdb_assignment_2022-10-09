@@ -13,22 +13,22 @@ class GenreListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var orientation = MediaQuery.of(context).orientation;
-
-    return InkWell(
-        onTap: () {},
-        child: Card(
-          margin: const EdgeInsets.all(16.0),
-          elevation: 2,
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Stack(
-            alignment: Alignment.bottomLeft,
-            children: [_buildImage(orientation, context), text],
-          ),
-        ));
+    return OrientationBuilder(builder: (context, orientation) {
+      return InkWell(
+          onTap: () {},
+          child: Card(
+            margin: const EdgeInsets.all(16.0),
+            elevation: 2,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Stack(
+              alignment: Alignment.bottomLeft,
+              children: [_buildImage(orientation, context), text],
+            ),
+          ));
+    });
   }
 
   Widget get text => Container(

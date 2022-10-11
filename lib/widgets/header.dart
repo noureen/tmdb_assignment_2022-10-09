@@ -69,18 +69,18 @@ class _HeaderAppBarState extends State<HeaderAppBar> {
         ),
       );
 
-  Widget get genre => InkWell(
-        onTap: () {
-          Get.toNamed('/search');
-        },
-        child: Container(
-            width: double.infinity,
-            height: 60.0,
-            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-            child: Center(
-              child: searchField,
-            )),
-      );
+  Widget get genre => Container(
+      width: double.infinity,
+      height: 60.0,
+      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+      child: Center(
+        child: InkWell(
+            onTap: () {
+              debugPrint('sadkalsjdkljas');
+              Get.toNamed('/search');
+            },
+            child: searchField),
+      ));
 
   Widget get search => Container(
       width: double.infinity,

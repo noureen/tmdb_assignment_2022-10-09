@@ -25,7 +25,7 @@ class LoadSearchMovieState extends SearchMovieState {
       required this.nextPageKey});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [nextPageKey ?? 0];
 }
 
 class SearchMovieStartState extends SearchMovieState {}

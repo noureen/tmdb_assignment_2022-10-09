@@ -1,6 +1,6 @@
 part of 'upcoming_movies_bloc.dart';
 
-abstract class UpcomingMoviesState /*extends Equatable*/ {
+abstract class UpcomingMoviesState extends Equatable {
   const UpcomingMoviesState();
 
   @override
@@ -25,16 +25,10 @@ class LoadUpcomingMoviesState extends UpcomingMoviesState {
       required this.nextPageKey});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [nextPageKey ?? 0];
 }
 
 class UpcomingMoviesStartState extends UpcomingMoviesState {}
-
-class UpcomingMoviesEndState extends UpcomingMoviesState {
-  bool isSuccess;
-
-  UpcomingMoviesEndState({required this.isSuccess});
-}
 
 class UpcomingMoviesErrorState extends UpcomingMoviesState {
   final errorMsg;
@@ -57,4 +51,10 @@ class MoviesHideProgressState extends UpcomingMoviesState {
 
   @override
   List<Object> get props => [];
+}
+
+class UpcomingMoviesEndState extends UpcomingMoviesState {
+  bool isSuccess;
+
+  UpcomingMoviesEndState({required this.isSuccess});
 }

@@ -1,6 +1,6 @@
 part of 'genre_bloc.dart';
 
-abstract class GenreState /*extends Equatable*/ {
+abstract class GenreState extends Equatable {
   const GenreState();
 
   @override
@@ -17,19 +17,10 @@ class GenreInitState extends GenreState {
 class LoadGenreState extends GenreState {
   final List<Genres>? genreList;
 
-  LoadGenreState(
-      {required this.genreList});
+  LoadGenreState({required this.genreList});
 
   @override
-  List<Object> get props => [];
-}
-
-class GenreStartState extends GenreState {}
-
-class GenreEndState extends GenreState {
-  bool isSuccess;
-
-  GenreEndState({required this.isSuccess});
+  List<Object> get props => [genreList ?? []];
 }
 
 class GenreErrorState extends GenreState {
@@ -53,4 +44,10 @@ class GenreHideProgressState extends GenreState {
 
   @override
   List<Object> get props => [];
+}
+
+class GenreEndState extends GenreState {
+  bool isSuccess;
+
+  GenreEndState({required this.isSuccess});
 }

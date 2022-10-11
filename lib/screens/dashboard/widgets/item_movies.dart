@@ -15,24 +15,24 @@ class MovieListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var orientation = MediaQuery.of(context).orientation;
-
-    return InkWell(
-        onTap: () {
-          Get.toNamed('/detail', arguments: {"movie_id": movie?.id});
-        },
-        child: Card(
-          margin: const EdgeInsets.all(16.0),
-          elevation: 2,
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Stack(
-            alignment: Alignment.bottomLeft,
-            children: [_buildImage(orientation, context), text],
-          ),
-        ));
+    return OrientationBuilder(builder: (context, orientation) {
+      return InkWell(
+          onTap: () {
+            Get.toNamed('/detail', arguments: {"movie_id": movie?.id});
+          },
+          child: Card(
+            margin: const EdgeInsets.all(16.0),
+            elevation: 2,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Stack(
+              alignment: Alignment.bottomLeft,
+              children: [_buildImage(orientation, context), text],
+            ),
+          ));
+    });
   }
 
   Widget get text => Container(
@@ -64,7 +64,8 @@ class MovieListItem extends StatelessWidget {
               errorWidget: (context, url, error) => errorView,
               imageUrl: '${Endpoints.imageUrl}${movie?.backdropPath ?? ''}',
               fit: BoxFit.fill,
-              progressIndicatorBuilder: (context, url, downloadProgress) => progressView,
+              progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  progressView,
             ),
           ),
         ),
