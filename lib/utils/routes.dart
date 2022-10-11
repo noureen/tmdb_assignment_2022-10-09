@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:the_movies_db_app/screens/dashboard/dashboard_page.dart';
+import 'package:the_movies_db_app/screens/details/widgets/video_show.dart';
 import 'package:the_movies_db_app/screens/genre/genre_page.dart';
 
 import '../screens/details/details.dart';
@@ -29,6 +30,13 @@ appRoutes() => [
       GetPage(
         name: '/genre',
         page: () => const GenrePage(),
+        middlewares: [MyMiddleware()],
+        transition: Transition.leftToRightWithFade,
+        transitionDuration: const Duration(milliseconds: 500),
+      ),
+      GetPage(
+        name: '/trailer',
+        page: () => const VideoApp(),
         middlewares: [MyMiddleware()],
         transition: Transition.leftToRightWithFade,
         transitionDuration: const Duration(milliseconds: 500),

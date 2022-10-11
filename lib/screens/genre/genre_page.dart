@@ -11,6 +11,8 @@ import '../../styles/styles.dart';
 import '../../widgets/header.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+
+//In this page I have called Genre list of tmdb but was not able to find image list
 class GenrePage extends StatefulWidget {
   const GenrePage({Key? key}) : super(key: key);
 

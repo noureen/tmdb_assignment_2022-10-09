@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:the_movies_db_app/constants/constants.dart';
+import 'package:the_movies_db_app/data/model/movie_video/movie_video.dart';
 import 'package:the_movies_db_app/screens/details/widgets/logo.dart';
 import 'package:the_movies_db_app/styles/styles.dart';
 import 'package:the_movies_db_app/utils/utility.dart';
@@ -15,14 +16,14 @@ class MovieImage extends StatelessWidget {
   final String? image;
   final String? logoPath;
   final String? releaseDate;
-  final String? trailerPath;
+  final MovieVideo? trailer;
 
   const MovieImage(
       {Key? key,
       required this.image,
       this.releaseDate,
       this.logoPath,
-      this.trailerPath})
+      this.trailer})
       : super(key: key);
 
   @override
@@ -82,10 +83,11 @@ class MovieImage extends StatelessWidget {
             backgroundColor: Colors.blue,
             title: strGetTickets),
         vSpace,
-       // if (Utility.isSet(trailerPath)) ...[
+        if (trailer != null) ...[
           CustomButton(
             onPress: () {
-              Get.toNamed('/trailer', arguments: {"media_path": trailerPath});
+              Get.toNamed('/trailer',
+                  arguments: {"trailer": Utility.jsonToString(trailer)});
             },
             borderColor: Colors.blue,
             borderRadius: 8.0,
@@ -94,14 +96,13 @@ class MovieImage extends StatelessWidget {
             title: strWatchTrailer,
             icon: Icons.play_arrow,
           ),
-        //]
+        ]
       ],
     );
   }
 
   _buildMovieActionsLandscape() {
     return Row(
-
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         CustomButton(
@@ -112,10 +113,11 @@ class MovieImage extends StatelessWidget {
             backgroundColor: Colors.blue,
             title: strGetTickets),
         hSpace,
-        //if (Utility.isSet(trailerPath)) ...[
+        if (trailer != null) ...[
           CustomButton(
             onPress: () {
-              Get.toNamed('/trailer', arguments: {"media_path": trailerPath});
+              Get.toNamed('/trailer',
+                  arguments: {"trailer": Utility.jsonToString(trailer)});
             },
             borderColor: Colors.blue,
             borderRadius: 8.0,
@@ -124,7 +126,7 @@ class MovieImage extends StatelessWidget {
             title: strWatchTrailer,
             icon: Icons.play_arrow,
           ),
-        //]
+        ]
       ],
     );
   }
@@ -132,7 +134,8 @@ class MovieImage extends StatelessWidget {
   Widget get vSpace => SizedBox(
         height: 2.0.h,
       );
+
   Widget get hSpace => SizedBox(
-    width: 2.0.h,
-  );
+        width: 2.0.h,
+      );
 }

@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_movies_db_app/data/model/movie_images/movies_images.dart';
+import 'package:the_movies_db_app/data/model/movie_video/movie_video.dart';
+import 'package:the_movies_db_app/data/model/movie_video/movie_video_response.dart';
 import 'package:the_movies_db_app/repository/movie_detail/movie_detail_repository.dart';
 import '../../data/model/movie_detail/movie_detail.dart';
 import '../../repository/movie_db/movies_db_repo.dart';
@@ -11,6 +13,12 @@ import '../../repository/movie_db/movies_db_repo.dart';
 part 'movie_detail_event.dart';
 
 part 'movie_detail_state.dart';
+
+enum VideoType {
+  trailer,
+  teaser,
+  featurette,
+}
 
 class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
   final MoviesDetailRepository _movieDetailRepo;
@@ -21,10 +29,10 @@ class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
     required MoviesDbRepo moviesDbRepo,
   })  : _movieDetailRepo = movieDetailRepo,
         _moviesDbRepo = moviesDbRepo,
-        super(MovieDetailInitState()) {
+        super(const MovieDetailInitState()) {
     on<MovieDetailEvent>((event, emit) async {
       if (event is MovieDetailInitEvent) {
-        emit(MovieDetailInitState());
+        emit(const MovieDetailInitState());
       } else if (event is FetchMovieDetailEvent) {
         var connectivityResult = await (Connectivity().checkConnectivity());
         if (connectivityResult == ConnectivityResult.none) {
@@ -48,13 +56,26 @@ class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
     emit(const DetailHideProgressState());
     if (detail != null) {
       if (detail.movieImages != null) {
+        MovieVideo? trailer;
+        if (detail.movieVideo != null &&
+            ((detail.movieVideo)?.results != null &&
+                (detail.movieVideo?.results?.isNotEmpty ?? false))) {
+          //here find for trailer from videos list
+          detail.movieVideo?.results?.map((video) {
+            if (video.type?.toLowerCase() == VideoType.trailer.name) {
+              trailer = video;
+            }
+          }).toList();
+        }
         emit(LoadMovieDetailState(
-            movieDetail: detail.movieDetail, moviesImages: detail.movieImages));
+            movieDetail: detail.movieDetail,
+            moviesImages: detail.movieImages,
+            movieTrailer: trailer));
       } else {
         emit(LoadMovieDetailState(movieDetail: detail.movieDetail));
       }
     } else {
-      emit(MovieDetailErrorState(errorMsg: 'Error'));
+      emit(const MovieDetailErrorState(errorMsg: 'Error'));
     }
   }
 
@@ -68,7 +89,8 @@ class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
 
       final response = await Future.wait([
         _movieDetailRepo.fetchMovieDetail(movieId: event.movieId ?? 0),
-        _movieDetailRepo.fetchMovieImages(movieId: event.movieId ?? 0)
+        _movieDetailRepo.fetchMovieImages(movieId: event.movieId ?? 0),
+        _movieDetailRepo.fetchMovieVideo(movieId: event.movieId ?? 0)
       ]);
       emit(const DetailHideProgressState());
       if (response[0] != null) {
@@ -80,20 +102,44 @@ class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
           _moviesDbRepo.insertMovieImages(
               id: event.movieId ?? 0, movie: response[1] as MoviesImages);
 
-          //update detail state
-          emit(LoadMovieDetailState(
-              movieDetail: response[0] as MovieDetail,
-              moviesImages: response[1] as MoviesImages));
+          //Insert movie videos to db
+          if (response[2] != null &&
+              (response[2] as MovieVideoResponse).results != null &&
+              ((response[2] as MovieVideoResponse).results?.isNotEmpty ??
+                  false)) {
+            _moviesDbRepo.insertMovieVideos(
+                id: event.movieId ?? 0,
+                movie: response[2] as MovieVideoResponse);
+
+            MovieVideo? trailer;
+            //here find for trailer from videos list
+            (response[2] as MovieVideoResponse).results?.map((video) {
+              if (video.type?.toLowerCase() == VideoType.trailer.name) {
+                trailer = video;
+              }
+            }).toList();
+
+            //update detail state
+            emit(LoadMovieDetailState(
+                movieDetail: response[0] as MovieDetail,
+                moviesImages: response[1] as MoviesImages,
+                movieTrailer: trailer));
+          } else {
+            //update detail state
+            emit(LoadMovieDetailState(
+                movieDetail: response[0] as MovieDetail,
+                moviesImages: response[1] as MoviesImages));
+          }
         } else {
           emit(LoadMovieDetailState(movieDetail: response[0] as MovieDetail));
         }
       } else {
-        emit(MovieDetailErrorState(errorMsg: 'Error'));
+        emit(const MovieDetailErrorState(errorMsg: 'Error'));
       }
     } on DioError {
-      emit(MovieDetailEndState(isSuccess: false));
+      emit(const MovieDetailEndState(isSuccess: false));
     } on Error {
-      emit(MovieDetailEndState(isSuccess: false));
+      emit(const MovieDetailEndState(isSuccess: false));
     }
   }
 }

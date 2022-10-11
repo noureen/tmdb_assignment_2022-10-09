@@ -19,6 +19,8 @@ abstract class MoviesDbRepoInterface {
 
   Future<MovieDetailEntityData?> getMovieDetail({required int? movieId});
 
+  Future<int> insertMovieVideos({required int id, MovieVideoResponse? movie});
+
   //Genre
 
   Future<int> insertGenre({required int id, Genres? genre});

@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:the_movies_db_app/data/model/movie_detail/genres.dart';
 import 'package:the_movies_db_app/data/model/movie_detail/movie_detail.dart';
 import 'package:the_movies_db_app/data/model/movie_images/movies_images.dart';
+import 'package:the_movies_db_app/data/model/movie_video/movie_video_response.dart';
 
 import '../../model/movies/movies_model.dart';
 import '../app_db.dart';
@@ -24,6 +25,11 @@ class DataMapper {
           {required int id, required MoviesImages? movieImages}) =>
       MovieDetailEntityCompanion.insert(
           movieId: Value(id), movieImages: Value(movieImages));
+
+  static MovieDetailEntityCompanion insertMapMovieVideos(
+      {required int id, required MovieVideoResponse? movieVideo}) =>
+      MovieDetailEntityCompanion.insert(
+          movieId: Value(id), movieVideo: Value(movieVideo));
 
   //Genre
 

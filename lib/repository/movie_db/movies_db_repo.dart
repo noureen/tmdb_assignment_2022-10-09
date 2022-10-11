@@ -3,6 +3,7 @@ import 'package:the_movies_db_app/data/database/dao/movie_detail_dao.dart';
 import 'package:the_movies_db_app/data/model/movie_detail/movie_detail.dart';
 
 import 'package:the_movies_db_app/data/model/movie_images/movies_images.dart';
+import 'package:the_movies_db_app/data/model/movie_video/movie_video_response.dart';
 
 import '../../data/database/app_db.dart';
 import '../../data/database/dao/movies_dao.dart';
@@ -75,6 +76,14 @@ class MoviesDbRepo implements MoviesDbRepoInterface {
   Future<int> insertMovieImages({required int id, MoviesImages? movie}) async {
     int result = await _movieDetailDao.insertMovieDetail(
         DataMapper.insertMapMovieImages(id: id, movieImages: movie));
+    return result;
+  }
+
+
+  @override
+  Future<int> insertMovieVideos({required int id, MovieVideoResponse? movie}) async {
+    int result = await _movieDetailDao.insertMovieDetail(
+        DataMapper.insertMapMovieVideos(id: id, movieVideo: movie));
     return result;
   }
 

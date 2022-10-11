@@ -1,11 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:the_movies_db_app/blocs/movie_detail/movie_detail_bloc.dart';
+import 'package:the_movies_db_app/data/model/movie_video/movie_video.dart';
 import 'package:the_movies_db_app/widgets/divider.dart';
 import 'package:the_movies_db_app/screens/details/widgets/generes.dart';
 import 'package:the_movies_db_app/screens/details/widgets/movie_image.dart';
@@ -82,7 +79,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                         false))
                                 ? state.moviesImages?.logos![1].filePath
                                 : '',
-                            state.movieDetail?.releaseDate);
+                            state.movieDetail?.releaseDate,
+                            state.movieTrailer);
                       } else if (state is MovieDetailErrorState) {
                         return noDetail;
                       }
@@ -108,20 +106,20 @@ class _DetailsScreenState extends State<DetailsScreen> {
       );
 
   _buildScrollContent(MovieDetail? movieDetail, String? backdropPath,
-      String? logoPath, String? releaseDate) {
+      String? logoPath, String? releaseDate, MovieVideo? movieVideo) {
     return OrientationBuilder(
       builder: (context, orientation) {
         return MediaQuery.of(context).orientation == Orientation.landscape
             ? _landscapeContent(
-                movieDetail, backdropPath, logoPath, releaseDate)
+                movieDetail, backdropPath, logoPath, releaseDate, movieVideo)
             : _portraitContent(
-                movieDetail, backdropPath, logoPath, releaseDate);
+                movieDetail, backdropPath, logoPath, releaseDate, movieVideo);
       },
     );
   }
 
-  _portraitContent(
-      MovieDetail? movie, String? backdrop, String? logo, String? releaseDate) {
+  _portraitContent(MovieDetail? movie, String? backdrop, String? logo,
+      String? releaseDate, MovieVideo? movieVideo) {
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       child: Column(
@@ -131,9 +129,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             image: backdrop,
             releaseDate: releaseDate,
             logoPath: logo,
-            trailerPath: (movie?.video ?? false)
-                ? ''
-                : 'https://www.youtube.com/watch?v=EngW7tLk6R8',
+            trailer: movieVideo,
           ),
           Generes(
             genres: movie?.genres,
@@ -149,8 +145,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
     );
   }
 
-  _landscapeContent(
-      MovieDetail? movie, String? backdrop, String? logo, String? releaseDate) {
+  _landscapeContent(MovieDetail? movie, String? backdrop, String? logo,
+      String? releaseDate, MovieVideo? movieVideo) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -158,7 +154,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
           image: backdrop,
           releaseDate: releaseDate,
           logoPath: logo,
-          trailerPath: (movie?.video ?? false) ? '' : '',
+          trailer: movieVideo,
         ),
         Expanded(
             child: Column(

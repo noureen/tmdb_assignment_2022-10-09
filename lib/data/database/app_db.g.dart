@@ -11,9 +11,7 @@ class MoviesEntityData extends DataClass
     implements Insertable<MoviesEntityData> {
   final int movieId;
   final MoviesModel? movie;
-
   MoviesEntityData({required this.movieId, this.movie});
-
   factory MoviesEntityData.fromData(Map<String, dynamic> data,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -24,7 +22,6 @@ class MoviesEntityData extends DataClass
           .mapFromDatabaseResponse(data['${effectivePrefix}movie'])),
     );
   }
-
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -52,7 +49,6 @@ class MoviesEntityData extends DataClass
       movie: serializer.fromJson<MoviesModel?>(json['movie']),
     );
   }
-
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
@@ -67,7 +63,6 @@ class MoviesEntityData extends DataClass
         movieId: movieId ?? this.movieId,
         movie: movie ?? this.movie,
       );
-
   @override
   String toString() {
     return (StringBuffer('MoviesEntityData(')
@@ -79,7 +74,6 @@ class MoviesEntityData extends DataClass
 
   @override
   int get hashCode => Object.hash(movieId, movie);
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -91,17 +85,14 @@ class MoviesEntityData extends DataClass
 class MoviesEntityCompanion extends UpdateCompanion<MoviesEntityData> {
   final Value<int> movieId;
   final Value<MoviesModel?> movie;
-
   const MoviesEntityCompanion({
     this.movieId = const Value.absent(),
     this.movie = const Value.absent(),
   });
-
   MoviesEntityCompanion.insert({
     this.movieId = const Value.absent(),
     this.movie = const Value.absent(),
   });
-
   static Insertable<MoviesEntityData> custom({
     Expression<int>? movieId,
     Expression<MoviesModel?>? movie,
@@ -148,9 +139,7 @@ class $MoviesEntityTable extends MoviesEntity
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $MoviesEntityTable(this.attachedDatabase, [this._alias]);
-
   final VerificationMeta _movieIdMeta = const VerificationMeta('movieId');
   @override
   late final GeneratedColumn<int?> movieId = GeneratedColumn<int?>(
@@ -162,16 +151,12 @@ class $MoviesEntityTable extends MoviesEntity
       GeneratedColumn<String?>('movie', aliasedName, true,
               type: const StringType(), requiredDuringInsert: false)
           .withConverter<MoviesModel>($MoviesEntityTable.$converter0);
-
   @override
   List<GeneratedColumn> get $columns => [movieId, movie];
-
   @override
   String get aliasedName => _alias ?? 'movies_entity';
-
   @override
   String get actualTableName => 'movies_entity';
-
   @override
   VerificationContext validateIntegrity(Insertable<MoviesEntityData> instance,
       {bool isInserting = false}) {
@@ -187,7 +172,6 @@ class $MoviesEntityTable extends MoviesEntity
 
   @override
   Set<GeneratedColumn> get $primaryKey => {movieId};
-
   @override
   MoviesEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
     return MoviesEntityData.fromData(data,
@@ -207,10 +191,12 @@ class MovieDetailEntityData extends DataClass
   final int movieId;
   final MovieDetail? movieDetail;
   final MoviesImages? movieImages;
-
+  final MovieVideoResponse? movieVideo;
   MovieDetailEntityData(
-      {required this.movieId, this.movieDetail, this.movieImages});
-
+      {required this.movieId,
+      this.movieDetail,
+      this.movieImages,
+      this.movieVideo});
   factory MovieDetailEntityData.fromData(Map<String, dynamic> data,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -223,9 +209,11 @@ class MovieDetailEntityData extends DataClass
       movieImages: $MovieDetailEntityTable.$converter1.mapToDart(
           const StringType()
               .mapFromDatabaseResponse(data['${effectivePrefix}movie_images'])),
+      movieVideo: $MovieDetailEntityTable.$converter2.mapToDart(
+          const StringType()
+              .mapFromDatabaseResponse(data['${effectivePrefix}movie_video'])),
     );
   }
-
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -237,6 +225,10 @@ class MovieDetailEntityData extends DataClass
     if (!nullToAbsent || movieImages != null) {
       final converter = $MovieDetailEntityTable.$converter1;
       map['movie_images'] = Variable<String?>(converter.mapToSql(movieImages));
+    }
+    if (!nullToAbsent || movieVideo != null) {
+      final converter = $MovieDetailEntityTable.$converter2;
+      map['movie_video'] = Variable<String?>(converter.mapToSql(movieVideo));
     }
     return map;
   }
@@ -250,6 +242,9 @@ class MovieDetailEntityData extends DataClass
       movieImages: movieImages == null && nullToAbsent
           ? const Value.absent()
           : Value(movieImages),
+      movieVideo: movieVideo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(movieVideo),
     );
   }
 
@@ -260,9 +255,9 @@ class MovieDetailEntityData extends DataClass
       movieId: serializer.fromJson<int>(json['movieId']),
       movieDetail: serializer.fromJson<MovieDetail?>(json['movieDetail']),
       movieImages: serializer.fromJson<MoviesImages?>(json['movieImages']),
+      movieVideo: serializer.fromJson<MovieVideoResponse?>(json['movieVideo']),
     );
   }
-
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
@@ -270,39 +265,43 @@ class MovieDetailEntityData extends DataClass
       'movieId': serializer.toJson<int>(movieId),
       'movieDetail': serializer.toJson<MovieDetail?>(movieDetail),
       'movieImages': serializer.toJson<MoviesImages?>(movieImages),
+      'movieVideo': serializer.toJson<MovieVideoResponse?>(movieVideo),
     };
   }
 
   MovieDetailEntityData copyWith(
           {int? movieId,
           MovieDetail? movieDetail,
-          MoviesImages? movieImages}) =>
+          MoviesImages? movieImages,
+          MovieVideoResponse? movieVideo}) =>
       MovieDetailEntityData(
         movieId: movieId ?? this.movieId,
         movieDetail: movieDetail ?? this.movieDetail,
         movieImages: movieImages ?? this.movieImages,
+        movieVideo: movieVideo ?? this.movieVideo,
       );
-
   @override
   String toString() {
     return (StringBuffer('MovieDetailEntityData(')
           ..write('movieId: $movieId, ')
           ..write('movieDetail: $movieDetail, ')
-          ..write('movieImages: $movieImages')
+          ..write('movieImages: $movieImages, ')
+          ..write('movieVideo: $movieVideo')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(movieId, movieDetail, movieImages);
-
+  int get hashCode =>
+      Object.hash(movieId, movieDetail, movieImages, movieVideo);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is MovieDetailEntityData &&
           other.movieId == this.movieId &&
           other.movieDetail == this.movieDetail &&
-          other.movieImages == this.movieImages);
+          other.movieImages == this.movieImages &&
+          other.movieVideo == this.movieVideo);
 }
 
 class MovieDetailEntityCompanion
@@ -310,39 +309,43 @@ class MovieDetailEntityCompanion
   final Value<int> movieId;
   final Value<MovieDetail?> movieDetail;
   final Value<MoviesImages?> movieImages;
-
+  final Value<MovieVideoResponse?> movieVideo;
   const MovieDetailEntityCompanion({
     this.movieId = const Value.absent(),
     this.movieDetail = const Value.absent(),
     this.movieImages = const Value.absent(),
+    this.movieVideo = const Value.absent(),
   });
-
   MovieDetailEntityCompanion.insert({
     this.movieId = const Value.absent(),
     this.movieDetail = const Value.absent(),
     this.movieImages = const Value.absent(),
+    this.movieVideo = const Value.absent(),
   });
-
   static Insertable<MovieDetailEntityData> custom({
     Expression<int>? movieId,
     Expression<MovieDetail?>? movieDetail,
     Expression<MoviesImages?>? movieImages,
+    Expression<MovieVideoResponse?>? movieVideo,
   }) {
     return RawValuesInsertable({
       if (movieId != null) 'movie_id': movieId,
       if (movieDetail != null) 'movie_detail': movieDetail,
       if (movieImages != null) 'movie_images': movieImages,
+      if (movieVideo != null) 'movie_video': movieVideo,
     });
   }
 
   MovieDetailEntityCompanion copyWith(
       {Value<int>? movieId,
       Value<MovieDetail?>? movieDetail,
-      Value<MoviesImages?>? movieImages}) {
+      Value<MoviesImages?>? movieImages,
+      Value<MovieVideoResponse?>? movieVideo}) {
     return MovieDetailEntityCompanion(
       movieId: movieId ?? this.movieId,
       movieDetail: movieDetail ?? this.movieDetail,
       movieImages: movieImages ?? this.movieImages,
+      movieVideo: movieVideo ?? this.movieVideo,
     );
   }
 
@@ -362,6 +365,11 @@ class MovieDetailEntityCompanion
       map['movie_images'] =
           Variable<String?>(converter.mapToSql(movieImages.value));
     }
+    if (movieVideo.present) {
+      final converter = $MovieDetailEntityTable.$converter2;
+      map['movie_video'] =
+          Variable<String?>(converter.mapToSql(movieVideo.value));
+    }
     return map;
   }
 
@@ -370,7 +378,8 @@ class MovieDetailEntityCompanion
     return (StringBuffer('MovieDetailEntityCompanion(')
           ..write('movieId: $movieId, ')
           ..write('movieDetail: $movieDetail, ')
-          ..write('movieImages: $movieImages')
+          ..write('movieImages: $movieImages, ')
+          ..write('movieVideo: $movieVideo')
           ..write(')'))
         .toString();
   }
@@ -381,9 +390,7 @@ class $MovieDetailEntityTable extends MovieDetailEntity
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $MovieDetailEntityTable(this.attachedDatabase, [this._alias]);
-
   final VerificationMeta _movieIdMeta = const VerificationMeta('movieId');
   @override
   late final GeneratedColumn<int?> movieId = GeneratedColumn<int?>(
@@ -405,16 +412,20 @@ class $MovieDetailEntityTable extends MovieDetailEntity
       movieImages = GeneratedColumn<String?>('movie_images', aliasedName, true,
               type: const StringType(), requiredDuringInsert: false)
           .withConverter<MoviesImages>($MovieDetailEntityTable.$converter1);
-
+  final VerificationMeta _movieVideoMeta = const VerificationMeta('movieVideo');
   @override
-  List<GeneratedColumn> get $columns => [movieId, movieDetail, movieImages];
-
+  late final GeneratedColumnWithTypeConverter<MovieVideoResponse, String?>
+      movieVideo = GeneratedColumn<String?>('movie_video', aliasedName, true,
+              type: const StringType(), requiredDuringInsert: false)
+          .withConverter<MovieVideoResponse>(
+              $MovieDetailEntityTable.$converter2);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [movieId, movieDetail, movieImages, movieVideo];
   @override
   String get aliasedName => _alias ?? 'movie_detail_entity';
-
   @override
   String get actualTableName => 'movie_detail_entity';
-
   @override
   VerificationContext validateIntegrity(
       Insertable<MovieDetailEntityData> instance,
@@ -427,12 +438,12 @@ class $MovieDetailEntityTable extends MovieDetailEntity
     }
     context.handle(_movieDetailMeta, const VerificationResult.success());
     context.handle(_movieImagesMeta, const VerificationResult.success());
+    context.handle(_movieVideoMeta, const VerificationResult.success());
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {movieId};
-
   @override
   MovieDetailEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
     return MovieDetailEntityData.fromData(data,
@@ -448,15 +459,15 @@ class $MovieDetailEntityTable extends MovieDetailEntity
       MovieDetailhConverter();
   static TypeConverter<MoviesImages, String> $converter1 =
       MovieImageshConverter();
+  static TypeConverter<MovieVideoResponse, String> $converter2 =
+      MovieVideohConverter();
 }
 
 class GenresEntityData extends DataClass
     implements Insertable<GenresEntityData> {
   final int genreId;
   final Genres? genre;
-
   GenresEntityData({required this.genreId, this.genre});
-
   factory GenresEntityData.fromData(Map<String, dynamic> data,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -467,7 +478,6 @@ class GenresEntityData extends DataClass
           .mapFromDatabaseResponse(data['${effectivePrefix}genre'])),
     );
   }
-
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -495,7 +505,6 @@ class GenresEntityData extends DataClass
       genre: serializer.fromJson<Genres?>(json['genre']),
     );
   }
-
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
@@ -509,7 +518,6 @@ class GenresEntityData extends DataClass
         genreId: genreId ?? this.genreId,
         genre: genre ?? this.genre,
       );
-
   @override
   String toString() {
     return (StringBuffer('GenresEntityData(')
@@ -521,7 +529,6 @@ class GenresEntityData extends DataClass
 
   @override
   int get hashCode => Object.hash(genreId, genre);
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -533,17 +540,14 @@ class GenresEntityData extends DataClass
 class GenresEntityCompanion extends UpdateCompanion<GenresEntityData> {
   final Value<int> genreId;
   final Value<Genres?> genre;
-
   const GenresEntityCompanion({
     this.genreId = const Value.absent(),
     this.genre = const Value.absent(),
   });
-
   GenresEntityCompanion.insert({
     this.genreId = const Value.absent(),
     this.genre = const Value.absent(),
   });
-
   static Insertable<GenresEntityData> custom({
     Expression<int>? genreId,
     Expression<Genres?>? genre,
@@ -589,9 +593,7 @@ class $GenresEntityTable extends GenresEntity
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $GenresEntityTable(this.attachedDatabase, [this._alias]);
-
   final VerificationMeta _genreIdMeta = const VerificationMeta('genreId');
   @override
   late final GeneratedColumn<int?> genreId = GeneratedColumn<int?>(
@@ -603,16 +605,12 @@ class $GenresEntityTable extends GenresEntity
       GeneratedColumn<String?>('genre', aliasedName, true,
               type: const StringType(), requiredDuringInsert: false)
           .withConverter<Genres>($GenresEntityTable.$converter0);
-
   @override
   List<GeneratedColumn> get $columns => [genreId, genre];
-
   @override
   String get aliasedName => _alias ?? 'genres_entity';
-
   @override
   String get actualTableName => 'genres_entity';
-
   @override
   VerificationContext validateIntegrity(Insertable<GenresEntityData> instance,
       {bool isInserting = false}) {
@@ -628,7 +626,6 @@ class $GenresEntityTable extends GenresEntity
 
   @override
   Set<GeneratedColumn> get $primaryKey => {genreId};
-
   @override
   GenresEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
     return GenresEntityData.fromData(data,
@@ -645,16 +642,13 @@ class $GenresEntityTable extends GenresEntity
 
 abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
-
   _$AppDb.connect(DatabaseConnection connection) : super.connect(connection);
   late final $MoviesEntityTable moviesEntity = $MoviesEntityTable(this);
   late final $MovieDetailEntityTable movieDetailEntity =
       $MovieDetailEntityTable(this);
   late final $GenresEntityTable genresEntity = $GenresEntityTable(this);
-
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
-
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
       [moviesEntity, movieDetailEntity, genresEntity];

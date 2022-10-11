@@ -19,8 +19,10 @@ class MovieDetailInitState extends MovieDetailState {
 class LoadMovieDetailState extends MovieDetailState {
   final MovieDetail? movieDetail;
   final MoviesImages? moviesImages;
+  final MovieVideo? movieTrailer;
 
-  const LoadMovieDetailState({this.movieDetail, this.moviesImages});
+  const LoadMovieDetailState(
+      {this.movieDetail, this.moviesImages, this.movieTrailer});
 
   @override
   List<Object> get props => [movieDetail ?? [], moviesImages ?? []];

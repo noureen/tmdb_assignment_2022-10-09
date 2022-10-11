@@ -11,4 +11,7 @@ class Endpoints {
   static const String searchMovies =
       'search/movie?api_key={api_key}&query={query}&page={page}';
   static const String genre = 'genre/movie/list?api_key={api_key}';
+  static const String movieVideo = 'movie/{movie_id}/videos?api_key={api_key}';
+  static const String youtubeMovieVideo = 'https://www.youtube.com/watch?v=';
+  static const String vimeoMovieVideo = 'https://vimeo.com/';
 }
