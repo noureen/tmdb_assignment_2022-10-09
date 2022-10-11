@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
+import '../../../constants/constants.dart';
 import '../../../constants/endpoints.dart';
 
 class MovieLogo extends StatelessWidget {
@@ -20,16 +21,23 @@ class MovieLogo extends StatelessWidget {
           : 40.0.w,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child:  CachedNetworkImage(
-            imageUrl: '${Endpoints.imageUrl}${logoPath ?? ''}',
-            fit: BoxFit.fill,
-            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                Container(
-              color: Colors.grey.shade900,
-            ),
-          ),
-
+        child: CachedNetworkImage(
+          errorWidget: (context, url, error) => _buildErrorView(context),
+          imageUrl: '${Endpoints.imageUrl}${logoPath ?? ''}',
+          fit: BoxFit.fill,
+        ),
       ),
     );
   }
+
+  Widget _buildErrorView(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(14.0),
+    child: AspectRatio(
+      aspectRatio: 9 / 14,
+      child: Image.asset(
+        Assets.tmdbPlaceholder,
+        fit: BoxFit.cover,
+      ),
+    ),
+  );
 }

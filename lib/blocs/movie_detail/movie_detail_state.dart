@@ -1,6 +1,6 @@
 part of 'movie_detail_bloc.dart';
 
-abstract class MovieDetailState extends Equatable {
+abstract class MovieDetailState {
   const MovieDetailState();
 
   @override

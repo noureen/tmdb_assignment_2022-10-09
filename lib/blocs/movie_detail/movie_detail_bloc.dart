@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_movies_db_app/data/model/movie_images/movies_images.dart';
 import 'package:the_movies_db_app/data/model/movie_video/movie_video.dart';
@@ -86,53 +87,50 @@ class MovieDetailBloc extends Bloc<MovieDetailEvent, MovieDetailState> {
   ) async {
     try {
       emit(const DetailShowProgressState());
+      debugPrint('IamHereeeeeee111');
+      final responseDetail =
+          await _movieDetailRepo.fetchMovieDetail(movieId: event.movieId ?? 0);
 
-      final response = await Future.wait([
-        _movieDetailRepo.fetchMovieDetail(movieId: event.movieId ?? 0),
-        _movieDetailRepo.fetchMovieImages(movieId: event.movieId ?? 0),
-        _movieDetailRepo.fetchMovieVideo(movieId: event.movieId ?? 0)
-      ]);
+      final responseImages =
+          await _movieDetailRepo.fetchMovieImages(movieId: event.movieId ?? 0);
+
+      final responseVideo =
+          await _movieDetailRepo.fetchMovieVideo(movieId: event.movieId ?? 0);
+      MovieVideo? trailer;
+      debugPrint('IamHereeeeeee222');
       emit(const DetailHideProgressState());
-      if (response[0] != null) {
+      if (responseDetail != null) {
         //Insert movie detail to db
         _moviesDbRepo.insertMovieDetail(
-            id: event.movieId ?? 0, movie: response[0] as MovieDetail);
-        //Insert movie images to db
-        if (response[1] != null) {
-          _moviesDbRepo.insertMovieImages(
-              id: event.movieId ?? 0, movie: response[1] as MoviesImages);
+            id: event.movieId ?? 0, movie: responseDetail);
+      }
+      //Insert movie images to db
+      if (responseImages != null) {
+        _moviesDbRepo.insertMovieImages(
+            id: event.movieId ?? 0, movie: responseImages);
+      }
 
-          //Insert movie videos to db
-          if (response[2] != null &&
-              (response[2] as MovieVideoResponse).results != null &&
-              ((response[2] as MovieVideoResponse).results?.isNotEmpty ??
-                  false)) {
-            _moviesDbRepo.insertMovieVideos(
-                id: event.movieId ?? 0,
-                movie: response[2] as MovieVideoResponse);
+      //Insert movie videos to db
+      if (responseVideo != null &&
+          (responseVideo).results != null &&
+          ((responseVideo).results?.isNotEmpty ?? false)) {
+        _moviesDbRepo.insertMovieVideos(
+            id: event.movieId ?? 0, movie: responseVideo);
 
-            MovieVideo? trailer;
-            //here find for trailer from videos list
-            (response[2] as MovieVideoResponse).results?.map((video) {
-              if (video.type?.toLowerCase() == VideoType.trailer.name) {
-                trailer = video;
-              }
-            }).toList();
-
-            //update detail state
-            emit(LoadMovieDetailState(
-                movieDetail: response[0] as MovieDetail,
-                moviesImages: response[1] as MoviesImages,
-                movieTrailer: trailer));
-          } else {
-            //update detail state
-            emit(LoadMovieDetailState(
-                movieDetail: response[0] as MovieDetail,
-                moviesImages: response[1] as MoviesImages));
+        //here find for trailer from videos list
+        (responseVideo).results?.map((video) {
+          if (video.type?.toLowerCase() == VideoType.trailer.name) {
+            trailer = video;
           }
-        } else {
-          emit(LoadMovieDetailState(movieDetail: response[0] as MovieDetail));
-        }
+        }).toList();
+      }
+
+      if (responseDetail != null) {
+        //update detail state
+        emit(LoadMovieDetailState(
+            movieDetail: responseDetail,
+            moviesImages: responseImages,
+            movieTrailer: trailer));
       } else {
         emit(const MovieDetailErrorState(errorMsg: 'Error'));
       }
