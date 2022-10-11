@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:the_movies_db_app/styles/styles.dart';
 
@@ -16,30 +18,32 @@ class SearchMovieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return OrientationBuilder(builder: (context, orientation) {
-
       var padding = 12.0;
       if (MediaQuery.of(context).size.width > 700) {
         var mod = MediaQuery.of(context).size.width - 700;
         padding = mod / 2.0;
       }
 
-
-      return Padding(
-        padding: EdgeInsets.only(
-            right: padding, left: padding, top: 8.0, bottom: 8.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                _buildImage(context),
-                text,
-                icon,
-              ],
-            ),
-            space,
-          ],
+      return InkWell(
+        onTap: () {
+          Get.toNamed('/detail', arguments: {"movie_id": movie?.id});
+        },
+        child: Padding(
+          padding: EdgeInsets.only(
+              right: padding, left: padding, top: 8.0, bottom: 8.0),
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  _buildImage(context),
+                  text,
+                  icon,
+                ],
+              ),
+              space,
+            ],
+          ),
         ),
       );
     });

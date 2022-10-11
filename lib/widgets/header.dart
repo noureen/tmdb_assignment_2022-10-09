@@ -1,18 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:stream_transform/stream_transform.dart';
 import 'package:the_movies_db_app/blocs/search_movie/search_movie_bloc.dart';
 import 'package:the_movies_db_app/constants/constants.dart';
-import 'package:the_movies_db_app/utils/utility.dart';
 import '../styles/styles.dart';
 
 //All three pages have different top bar so I have used enums from which I am differentiating widgets types
 enum SearchType {
-  watch,//watch/dashboard page
-  search,//search page
-  genre,// genre page
+  watch, //watch/dashboard page
+  search, //search page
+  genre, // genre page
 }
 
 class HeaderAppBar extends StatefulWidget {
@@ -26,19 +27,31 @@ class HeaderAppBar extends StatefulWidget {
 
 class _HeaderAppBarState extends State<HeaderAppBar> {
   TextEditingController? _searchQueryController;
+  final StreamController<String> _searchStreamController = StreamController();
+
+  _fetchSearch(String key) {
+    BlocProvider.of<SearchMovieBloc>(context)
+        .add(SearchMovieInitEvent()); //Here I am first reseting the page
+    BlocProvider.of<SearchMovieBloc>(context).add(QueryEvent(query: key));
+  }
 
   @override
   void initState() {
+    _searchStreamController.stream
+        .debounce(const Duration(milliseconds: 400))
+        .listen((s) => _fetchSearch(s));
     // TODO: implement initState
     super.initState();
 
     //if search page then search controller is declare
-    _searchQueryController = TextEditingController()
+/*    _searchQueryController = TextEditingController()
       ..addListener(() {
         final query = _searchQueryController?.text.toString();
-        BlocProvider.of<SearchMovieBloc>(context).add(SearchMovieInitEvent());//Here I am first reseting the page
-        BlocProvider.of<SearchMovieBloc>(context).add(QueryEvent(query: query)); // then calling to set query
-      });
+        BlocProvider.of<SearchMovieBloc>(context)
+            .add(SearchMovieInitEvent()); //Here I am first reseting the page
+        BlocProvider.of<SearchMovieBloc>(context)
+            .add(QueryEvent(query: query)); //then set query here
+      });*/
   }
 
   @override
@@ -119,9 +132,10 @@ class _HeaderAppBarState extends State<HeaderAppBar> {
         focusNode: widget.searchType != SearchType.search
             ? AlwaysDisabledFocusNode()
             : null,
-        controller: widget.searchType == SearchType.search
+/*        controller: widget.searchType == SearchType.search
             ? _searchQueryController
-            : null,
+            : null,*/
+        onChanged: (v) => _searchStreamController.add(v),
         decoration: searchDecor,
       );
 
@@ -160,18 +174,19 @@ class _HeaderAppBarState extends State<HeaderAppBar> {
           onPressed: () {},
           icon: const Icon(Icons.search),
         ),
-        suffixIcon: widget.searchType == SearchType.search
+/*        suffixIcon: widget.searchType == SearchType.search
             ? IconButton(
                 onPressed: () {
                   _searchQueryController?.clear();
                 },
                 icon: const Icon(Icons.clear),
               )
-            : null,
+            : null,*/
       );
 
   @override
   void dispose() {
+    _searchStreamController.close();
     _searchQueryController?.dispose();
     super.dispose();
   }
