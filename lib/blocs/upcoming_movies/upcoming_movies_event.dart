@@ -22,3 +22,17 @@ class FetchUpcomingMoviesEvent extends UpcomingMoviesEvent {
   @override
   List<Object> get props => [];
 }
+
+
+//Event to fetch movies list
+class FetchUpcomingMoviesDBEvent extends UpcomingMoviesEvent {
+  final bool? loadFirstPage;
+
+  FetchUpcomingMoviesDBEvent(
+      {this.loadFirstPage = false});
+
+
+  @override
+  List<Object> get props => [];
+}
+

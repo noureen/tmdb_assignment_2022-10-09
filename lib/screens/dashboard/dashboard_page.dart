@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:the_movies_db_app/constants/constants.dart';
-import 'package:the_movies_db_app/screens/dashboard/widgets/item_upcoming_movies.dart';
+import 'package:the_movies_db_app/screens/dashboard/widgets/item_movies.dart';
 import 'package:the_movies_db_app/widgets/footer.dart';
 import '../../blocs/upcoming_movies/upcoming_movies_bloc.dart';
-import '../../data/model/upcoming_movies/upcoming_movies_model.dart';
+import '../../data/model/movies/movies_model.dart';
 import '../../main.dart';
 import '../../styles/styles.dart';
 import '../../widgets/header.dart';
@@ -18,8 +21,8 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  PagingController<int, UpcomingMoviesModel>? _pagingController;
-  bool isLastPageLoaded = false;
+  PagingController<int, MoviesModel>? _pagingController;
+  bool _isLastPage = false;
 
   Future<void> _fetchPage(bool isLoadFirstPage) async {
     try {
@@ -52,76 +55,93 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
+    return SafeArea(
+        child: Scaffold(
+      body: WillPopScope(
         child: Column(
-          children: [HeaderAppBar(), Expanded(child: bodyContent)],
+          children: [const HeaderAppBar(searchType: SearchType.watch,), Expanded(child: bodyContent)],
         ),
+        onWillPop: () async {
+          Navigator.pop(context);
+          return false;
+        },
       ),
       bottomNavigationBar: Footer(),
+    ));
+  }
+
+  Widget get bodyContent {
+    var padLeft = 0.0;
+    if (MediaQuery.of(context).size.width > 700) {
+      var mod = MediaQuery.of(context).size.width - 700;
+      padLeft = mod / 2.0;
+    }
+    return BlocListener<UpcomingMoviesBloc, UpcomingMoviesState>(
+      listener: (context, state) {
+        if (state is UpcomingMoviesInitState) {
+          _fetchPage(true);
+        } else if (state is MoviesShowProgressState) {
+          progress.showLoader(context);
+        } else if (state is MoviesHideProgressState) {
+          progress.hideLoader();
+        } else if (state is UpcomingMoviesErrorState) {}
+      },
+      child: Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.only(left: padLeft, right: padLeft),
+        height: MediaQuery.of(context).size.height,
+        color: bodyGreyColor,
+        child: BlocBuilder<UpcomingMoviesBloc, UpcomingMoviesState>(
+            builder: (BuildContext context, UpcomingMoviesState state) {
+          if (state is LoadUpcomingMoviesState && _pagingController != null) {
+            _updatePagination(
+                state.isLastPage, state.movieList, state.nextPageKey);
+            return PagedListView<int, MoviesModel>(
+              shrinkWrap: true,
+              pagingController: _pagingController!,
+              builderDelegate: PagedChildBuilderDelegate<MoviesModel>(
+                itemBuilder: (context, item, index) {
+                  final item = _pagingController?.itemList![index];
+                  return MovieListItem(
+                    movie: item,
+                  );
+                },
+              ),
+            );
+          } else if (state is UpcomingMoviesInitState ||
+              state is MoviesShowProgressState) {
+            return const SizedBox();
+          }
+          return noMovies;
+        }),
+      ),
     );
   }
 
-  Widget get bodyContent =>
-      BlocListener<UpcomingMoviesBloc, UpcomingMoviesState>(
-        listener: (context, state) {
-          if (state is UpcomingMoviesInitState) {
-            _fetchPage(true);
-          } else if (state is ShowProgressState) {
-            progress.showLoader(context);
-          } else if (state is HideProgressState) {
-            progress.hideLoader();
-          } else if (state is UpcomingMoviesErrorState) {}
-        },
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          color:bodyGreyColor,
-          child: BlocBuilder<UpcomingMoviesBloc, UpcomingMoviesState>(
-              builder: (BuildContext context, UpcomingMoviesState state) {
-            if (state is LoadUpcomingMoviesState && _pagingController != null) {
-              _updatePagination(
-                  state.isLastPage, state.upcomingMovieList, state.nextPageKey);
-
-              return PagedListView<int, UpcomingMoviesModel>(
-                shrinkWrap: true,
-                pagingController: _pagingController!,
-                builderDelegate: PagedChildBuilderDelegate<UpcomingMoviesModel>(
-                  itemBuilder: (context, item, index) {
-                    final item = _pagingController?.itemList![index];
-
-                    return MovieListItem(movie: item,);
-                  },
-                ),
-              );
-            }
-            return _buildNoUpcomingMovies();
-          }),
-        ),
-      );
-
-  Widget _buildNoUpcomingMovies() => const SizedBox(
+  Widget get noMovies => SizedBox(
         child: Center(
-          child: Text(AppStrings.strNoItemsFound),
+          child: Text(
+            strUpcomingNoItemsFound,
+            style: mediumTextMsgs,
+          ),
         ),
       );
 
-  _updatePagination(bool? isLastPage,
-      List<UpcomingMoviesModel>? movies, int? nextPageKey) {
+  _updatePagination(
+      bool? isLastPage, List<MoviesModel>? movies, int? nextPageKey) {
     if (nextPageKey == 2) {
       _resetPagination();
     }
-    if ((isLastPage ?? false) && !isLastPageLoaded) {
+    if ((isLastPage ?? false) && !_isLastPage) {
       _pagingController?.appendLastPage(movies ?? []);
-      isLastPageLoaded = true;
+      _isLastPage = true;
     } else if (!(isLastPage ?? false)) {
       _pagingController?.appendPage(movies ?? [], nextPageKey);
     }
-
-
   }
 
   _resetPagination() {
-    isLastPageLoaded = false;
+    _isLastPage = false;
     _pagingController?.itemList?.clear();
     _pagingController?.nextPageKey = 0;
     _pagingController?.appendPage([], 0);
@@ -131,7 +151,4 @@ class _DashboardPageState extends State<DashboardPage> {
     _pagingController = PagingController(firstPageKey: 0);
     _addPaginationListener();
   }
-
-
-
 }

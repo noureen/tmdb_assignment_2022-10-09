@@ -3,10 +3,18 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:the_movies_db_app/data/database/entity/genre_entity.dart';
+import 'package:the_movies_db_app/data/database/entity/movie_detail_entity.dart';
 
-import '../model/upcoming_movies/upcoming_movies_converter.dart';
-import '../model/upcoming_movies/upcoming_movies_model.dart';
-import 'entity/upcoming_movies_entity.dart';
+import '../model/genre/genre_converter.dart';
+import '../model/movie_detail/genres.dart';
+import '../model/movie_detail/movie_detail.dart';
+import '../model/movie_detail/movie_detail_converter.dart';
+import '../model/movie_images/movie_images_converter.dart';
+import '../model/movie_images/movies_images.dart';
+import '../model/movies/movies_converter.dart';
+import '../model/movies/movies_model.dart';
+import 'entity/movies_entity.dart';
 part 'app_db.g.dart';
 
 
@@ -21,7 +29,7 @@ LazyDatabase openConnection({bool logStatements = false}) {
 
 
 
-@DriftDatabase(tables: [MoviesEntity])
+@DriftDatabase(tables: [MoviesEntity,MovieDetailEntity,GenresEntity])
 class AppDb extends _$AppDb {
   AppDb(QueryExecutor e) : super(e);
 

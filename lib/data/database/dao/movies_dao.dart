@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:the_movies_db_app/data/database/entity/upcoming_movies_entity.dart';
 import '../app_db.dart';
+import '../entity/movies_entity.dart';
 
 part 'movies_dao.g.dart';
 
@@ -9,7 +9,7 @@ part 'movies_dao.g.dart';
 class MoviesDao extends DatabaseAccessor<AppDb> with _$MoviesDaoMixin {
   MoviesDao(AppDb db) : super(db);
 
-  Future<List<MoviesEntityData>?> getSyncer() async {
+  Future<List<MoviesEntityData>?> getMovies() async {
     try {
       return await (select(moviesEntity)).get();
     } on Error {
@@ -23,5 +23,12 @@ class MoviesDao extends DatabaseAccessor<AppDb> with _$MoviesDaoMixin {
 
   Future<bool> updateMoviesDao(MoviesEntityCompanion entity) async {
     return await update(moviesEntity).replace(entity);
+  }
+
+  Future<List<MoviesEntityData>?> getMoviesPaginated({
+    required int limit,
+    required int offset,
+  }) async {
+    return (select(moviesEntity)..limit(limit, offset: offset)).get();
   }
 }

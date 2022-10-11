@@ -10,8 +10,10 @@ part of 'app_db.dart';
 class MoviesEntityData extends DataClass
     implements Insertable<MoviesEntityData> {
   final int movieId;
-  final UpcomingMoviesModel? movie;
+  final MoviesModel? movie;
+
   MoviesEntityData({required this.movieId, this.movie});
+
   factory MoviesEntityData.fromData(Map<String, dynamic> data,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -22,6 +24,7 @@ class MoviesEntityData extends DataClass
           .mapFromDatabaseResponse(data['${effectivePrefix}movie'])),
     );
   }
+
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -46,23 +49,25 @@ class MoviesEntityData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return MoviesEntityData(
       movieId: serializer.fromJson<int>(json['movieId']),
-      movie: serializer.fromJson<UpcomingMoviesModel?>(json['movie']),
+      movie: serializer.fromJson<MoviesModel?>(json['movie']),
     );
   }
+
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'movieId': serializer.toJson<int>(movieId),
-      'movie': serializer.toJson<UpcomingMoviesModel?>(movie),
+      'movie': serializer.toJson<MoviesModel?>(movie),
     };
   }
 
-  MoviesEntityData copyWith({int? movieId, UpcomingMoviesModel? movie}) =>
+  MoviesEntityData copyWith({int? movieId, MoviesModel? movie}) =>
       MoviesEntityData(
         movieId: movieId ?? this.movieId,
         movie: movie ?? this.movie,
       );
+
   @override
   String toString() {
     return (StringBuffer('MoviesEntityData(')
@@ -74,6 +79,7 @@ class MoviesEntityData extends DataClass
 
   @override
   int get hashCode => Object.hash(movieId, movie);
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -84,18 +90,21 @@ class MoviesEntityData extends DataClass
 
 class MoviesEntityCompanion extends UpdateCompanion<MoviesEntityData> {
   final Value<int> movieId;
-  final Value<UpcomingMoviesModel?> movie;
+  final Value<MoviesModel?> movie;
+
   const MoviesEntityCompanion({
     this.movieId = const Value.absent(),
     this.movie = const Value.absent(),
   });
+
   MoviesEntityCompanion.insert({
     this.movieId = const Value.absent(),
     this.movie = const Value.absent(),
   });
+
   static Insertable<MoviesEntityData> custom({
     Expression<int>? movieId,
-    Expression<UpcomingMoviesModel?>? movie,
+    Expression<MoviesModel?>? movie,
   }) {
     return RawValuesInsertable({
       if (movieId != null) 'movie_id': movieId,
@@ -104,7 +113,7 @@ class MoviesEntityCompanion extends UpdateCompanion<MoviesEntityData> {
   }
 
   MoviesEntityCompanion copyWith(
-      {Value<int>? movieId, Value<UpcomingMoviesModel?>? movie}) {
+      {Value<int>? movieId, Value<MoviesModel?>? movie}) {
     return MoviesEntityCompanion(
       movieId: movieId ?? this.movieId,
       movie: movie ?? this.movie,
@@ -139,7 +148,9 @@ class $MoviesEntityTable extends MoviesEntity
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
+
   $MoviesEntityTable(this.attachedDatabase, [this._alias]);
+
   final VerificationMeta _movieIdMeta = const VerificationMeta('movieId');
   @override
   late final GeneratedColumn<int?> movieId = GeneratedColumn<int?>(
@@ -147,16 +158,20 @@ class $MoviesEntityTable extends MoviesEntity
       type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _movieMeta = const VerificationMeta('movie');
   @override
-  late final GeneratedColumnWithTypeConverter<UpcomingMoviesModel, String?>
-      movie = GeneratedColumn<String?>('movie', aliasedName, true,
+  late final GeneratedColumnWithTypeConverter<MoviesModel, String?> movie =
+      GeneratedColumn<String?>('movie', aliasedName, true,
               type: const StringType(), requiredDuringInsert: false)
-          .withConverter<UpcomingMoviesModel>($MoviesEntityTable.$converter0);
+          .withConverter<MoviesModel>($MoviesEntityTable.$converter0);
+
   @override
   List<GeneratedColumn> get $columns => [movieId, movie];
+
   @override
   String get aliasedName => _alias ?? 'movies_entity';
+
   @override
   String get actualTableName => 'movies_entity';
+
   @override
   VerificationContext validateIntegrity(Insertable<MoviesEntityData> instance,
       {bool isInserting = false}) {
@@ -172,6 +187,7 @@ class $MoviesEntityTable extends MoviesEntity
 
   @override
   Set<GeneratedColumn> get $primaryKey => {movieId};
+
   @override
   MoviesEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
     return MoviesEntityData.fromData(data,
@@ -183,16 +199,463 @@ class $MoviesEntityTable extends MoviesEntity
     return $MoviesEntityTable(attachedDatabase, alias);
   }
 
-  static TypeConverter<UpcomingMoviesModel, String> $converter0 =
-      UpComingMovieshConverter();
+  static TypeConverter<MoviesModel, String> $converter0 = MovieshConverter();
+}
+
+class MovieDetailEntityData extends DataClass
+    implements Insertable<MovieDetailEntityData> {
+  final int movieId;
+  final MovieDetail? movieDetail;
+  final MoviesImages? movieImages;
+
+  MovieDetailEntityData(
+      {required this.movieId, this.movieDetail, this.movieImages});
+
+  factory MovieDetailEntityData.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return MovieDetailEntityData(
+      movieId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}movie_id'])!,
+      movieDetail: $MovieDetailEntityTable.$converter0.mapToDart(
+          const StringType()
+              .mapFromDatabaseResponse(data['${effectivePrefix}movie_detail'])),
+      movieImages: $MovieDetailEntityTable.$converter1.mapToDart(
+          const StringType()
+              .mapFromDatabaseResponse(data['${effectivePrefix}movie_images'])),
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['movie_id'] = Variable<int>(movieId);
+    if (!nullToAbsent || movieDetail != null) {
+      final converter = $MovieDetailEntityTable.$converter0;
+      map['movie_detail'] = Variable<String?>(converter.mapToSql(movieDetail));
+    }
+    if (!nullToAbsent || movieImages != null) {
+      final converter = $MovieDetailEntityTable.$converter1;
+      map['movie_images'] = Variable<String?>(converter.mapToSql(movieImages));
+    }
+    return map;
+  }
+
+  MovieDetailEntityCompanion toCompanion(bool nullToAbsent) {
+    return MovieDetailEntityCompanion(
+      movieId: Value(movieId),
+      movieDetail: movieDetail == null && nullToAbsent
+          ? const Value.absent()
+          : Value(movieDetail),
+      movieImages: movieImages == null && nullToAbsent
+          ? const Value.absent()
+          : Value(movieImages),
+    );
+  }
+
+  factory MovieDetailEntityData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MovieDetailEntityData(
+      movieId: serializer.fromJson<int>(json['movieId']),
+      movieDetail: serializer.fromJson<MovieDetail?>(json['movieDetail']),
+      movieImages: serializer.fromJson<MoviesImages?>(json['movieImages']),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'movieId': serializer.toJson<int>(movieId),
+      'movieDetail': serializer.toJson<MovieDetail?>(movieDetail),
+      'movieImages': serializer.toJson<MoviesImages?>(movieImages),
+    };
+  }
+
+  MovieDetailEntityData copyWith(
+          {int? movieId,
+          MovieDetail? movieDetail,
+          MoviesImages? movieImages}) =>
+      MovieDetailEntityData(
+        movieId: movieId ?? this.movieId,
+        movieDetail: movieDetail ?? this.movieDetail,
+        movieImages: movieImages ?? this.movieImages,
+      );
+
+  @override
+  String toString() {
+    return (StringBuffer('MovieDetailEntityData(')
+          ..write('movieId: $movieId, ')
+          ..write('movieDetail: $movieDetail, ')
+          ..write('movieImages: $movieImages')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(movieId, movieDetail, movieImages);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MovieDetailEntityData &&
+          other.movieId == this.movieId &&
+          other.movieDetail == this.movieDetail &&
+          other.movieImages == this.movieImages);
+}
+
+class MovieDetailEntityCompanion
+    extends UpdateCompanion<MovieDetailEntityData> {
+  final Value<int> movieId;
+  final Value<MovieDetail?> movieDetail;
+  final Value<MoviesImages?> movieImages;
+
+  const MovieDetailEntityCompanion({
+    this.movieId = const Value.absent(),
+    this.movieDetail = const Value.absent(),
+    this.movieImages = const Value.absent(),
+  });
+
+  MovieDetailEntityCompanion.insert({
+    this.movieId = const Value.absent(),
+    this.movieDetail = const Value.absent(),
+    this.movieImages = const Value.absent(),
+  });
+
+  static Insertable<MovieDetailEntityData> custom({
+    Expression<int>? movieId,
+    Expression<MovieDetail?>? movieDetail,
+    Expression<MoviesImages?>? movieImages,
+  }) {
+    return RawValuesInsertable({
+      if (movieId != null) 'movie_id': movieId,
+      if (movieDetail != null) 'movie_detail': movieDetail,
+      if (movieImages != null) 'movie_images': movieImages,
+    });
+  }
+
+  MovieDetailEntityCompanion copyWith(
+      {Value<int>? movieId,
+      Value<MovieDetail?>? movieDetail,
+      Value<MoviesImages?>? movieImages}) {
+    return MovieDetailEntityCompanion(
+      movieId: movieId ?? this.movieId,
+      movieDetail: movieDetail ?? this.movieDetail,
+      movieImages: movieImages ?? this.movieImages,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (movieId.present) {
+      map['movie_id'] = Variable<int>(movieId.value);
+    }
+    if (movieDetail.present) {
+      final converter = $MovieDetailEntityTable.$converter0;
+      map['movie_detail'] =
+          Variable<String?>(converter.mapToSql(movieDetail.value));
+    }
+    if (movieImages.present) {
+      final converter = $MovieDetailEntityTable.$converter1;
+      map['movie_images'] =
+          Variable<String?>(converter.mapToSql(movieImages.value));
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MovieDetailEntityCompanion(')
+          ..write('movieId: $movieId, ')
+          ..write('movieDetail: $movieDetail, ')
+          ..write('movieImages: $movieImages')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MovieDetailEntityTable extends MovieDetailEntity
+    with TableInfo<$MovieDetailEntityTable, MovieDetailEntityData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+
+  $MovieDetailEntityTable(this.attachedDatabase, [this._alias]);
+
+  final VerificationMeta _movieIdMeta = const VerificationMeta('movieId');
+  @override
+  late final GeneratedColumn<int?> movieId = GeneratedColumn<int?>(
+      'movie_id', aliasedName, false,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: 'NULL REFERENCES tags(movie_id)');
+  final VerificationMeta _movieDetailMeta =
+      const VerificationMeta('movieDetail');
+  @override
+  late final GeneratedColumnWithTypeConverter<MovieDetail, String?>
+      movieDetail = GeneratedColumn<String?>('movie_detail', aliasedName, true,
+              type: const StringType(), requiredDuringInsert: false)
+          .withConverter<MovieDetail>($MovieDetailEntityTable.$converter0);
+  final VerificationMeta _movieImagesMeta =
+      const VerificationMeta('movieImages');
+  @override
+  late final GeneratedColumnWithTypeConverter<MoviesImages, String?>
+      movieImages = GeneratedColumn<String?>('movie_images', aliasedName, true,
+              type: const StringType(), requiredDuringInsert: false)
+          .withConverter<MoviesImages>($MovieDetailEntityTable.$converter1);
+
+  @override
+  List<GeneratedColumn> get $columns => [movieId, movieDetail, movieImages];
+
+  @override
+  String get aliasedName => _alias ?? 'movie_detail_entity';
+
+  @override
+  String get actualTableName => 'movie_detail_entity';
+
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MovieDetailEntityData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('movie_id')) {
+      context.handle(_movieIdMeta,
+          movieId.isAcceptableOrUnknown(data['movie_id']!, _movieIdMeta));
+    }
+    context.handle(_movieDetailMeta, const VerificationResult.success());
+    context.handle(_movieImagesMeta, const VerificationResult.success());
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {movieId};
+
+  @override
+  MovieDetailEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return MovieDetailEntityData.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $MovieDetailEntityTable createAlias(String alias) {
+    return $MovieDetailEntityTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<MovieDetail, String> $converter0 =
+      MovieDetailhConverter();
+  static TypeConverter<MoviesImages, String> $converter1 =
+      MovieImageshConverter();
+}
+
+class GenresEntityData extends DataClass
+    implements Insertable<GenresEntityData> {
+  final int genreId;
+  final Genres? genre;
+
+  GenresEntityData({required this.genreId, this.genre});
+
+  factory GenresEntityData.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return GenresEntityData(
+      genreId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}genre_id'])!,
+      genre: $GenresEntityTable.$converter0.mapToDart(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}genre'])),
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['genre_id'] = Variable<int>(genreId);
+    if (!nullToAbsent || genre != null) {
+      final converter = $GenresEntityTable.$converter0;
+      map['genre'] = Variable<String?>(converter.mapToSql(genre));
+    }
+    return map;
+  }
+
+  GenresEntityCompanion toCompanion(bool nullToAbsent) {
+    return GenresEntityCompanion(
+      genreId: Value(genreId),
+      genre:
+          genre == null && nullToAbsent ? const Value.absent() : Value(genre),
+    );
+  }
+
+  factory GenresEntityData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GenresEntityData(
+      genreId: serializer.fromJson<int>(json['genreId']),
+      genre: serializer.fromJson<Genres?>(json['genre']),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'genreId': serializer.toJson<int>(genreId),
+      'genre': serializer.toJson<Genres?>(genre),
+    };
+  }
+
+  GenresEntityData copyWith({int? genreId, Genres? genre}) => GenresEntityData(
+        genreId: genreId ?? this.genreId,
+        genre: genre ?? this.genre,
+      );
+
+  @override
+  String toString() {
+    return (StringBuffer('GenresEntityData(')
+          ..write('genreId: $genreId, ')
+          ..write('genre: $genre')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(genreId, genre);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GenresEntityData &&
+          other.genreId == this.genreId &&
+          other.genre == this.genre);
+}
+
+class GenresEntityCompanion extends UpdateCompanion<GenresEntityData> {
+  final Value<int> genreId;
+  final Value<Genres?> genre;
+
+  const GenresEntityCompanion({
+    this.genreId = const Value.absent(),
+    this.genre = const Value.absent(),
+  });
+
+  GenresEntityCompanion.insert({
+    this.genreId = const Value.absent(),
+    this.genre = const Value.absent(),
+  });
+
+  static Insertable<GenresEntityData> custom({
+    Expression<int>? genreId,
+    Expression<Genres?>? genre,
+  }) {
+    return RawValuesInsertable({
+      if (genreId != null) 'genre_id': genreId,
+      if (genre != null) 'genre': genre,
+    });
+  }
+
+  GenresEntityCompanion copyWith({Value<int>? genreId, Value<Genres?>? genre}) {
+    return GenresEntityCompanion(
+      genreId: genreId ?? this.genreId,
+      genre: genre ?? this.genre,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (genreId.present) {
+      map['genre_id'] = Variable<int>(genreId.value);
+    }
+    if (genre.present) {
+      final converter = $GenresEntityTable.$converter0;
+      map['genre'] = Variable<String?>(converter.mapToSql(genre.value));
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GenresEntityCompanion(')
+          ..write('genreId: $genreId, ')
+          ..write('genre: $genre')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GenresEntityTable extends GenresEntity
+    with TableInfo<$GenresEntityTable, GenresEntityData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+
+  $GenresEntityTable(this.attachedDatabase, [this._alias]);
+
+  final VerificationMeta _genreIdMeta = const VerificationMeta('genreId');
+  @override
+  late final GeneratedColumn<int?> genreId = GeneratedColumn<int?>(
+      'genre_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: false);
+  final VerificationMeta _genreMeta = const VerificationMeta('genre');
+  @override
+  late final GeneratedColumnWithTypeConverter<Genres, String?> genre =
+      GeneratedColumn<String?>('genre', aliasedName, true,
+              type: const StringType(), requiredDuringInsert: false)
+          .withConverter<Genres>($GenresEntityTable.$converter0);
+
+  @override
+  List<GeneratedColumn> get $columns => [genreId, genre];
+
+  @override
+  String get aliasedName => _alias ?? 'genres_entity';
+
+  @override
+  String get actualTableName => 'genres_entity';
+
+  @override
+  VerificationContext validateIntegrity(Insertable<GenresEntityData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('genre_id')) {
+      context.handle(_genreIdMeta,
+          genreId.isAcceptableOrUnknown(data['genre_id']!, _genreIdMeta));
+    }
+    context.handle(_genreMeta, const VerificationResult.success());
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {genreId};
+
+  @override
+  GenresEntityData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return GenresEntityData.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $GenresEntityTable createAlias(String alias) {
+    return $GenresEntityTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<Genres, String> $converter0 = GenreshConverter();
 }
 
 abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+
   _$AppDb.connect(DatabaseConnection connection) : super.connect(connection);
   late final $MoviesEntityTable moviesEntity = $MoviesEntityTable(this);
+  late final $MovieDetailEntityTable movieDetailEntity =
+      $MovieDetailEntityTable(this);
+  late final $GenresEntityTable genresEntity = $GenresEntityTable(this);
+
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [moviesEntity];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [moviesEntity, movieDetailEntity, genresEntity];
 }

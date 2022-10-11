@@ -11,8 +11,8 @@ abstract class NetworkModule {
     dio
       ..options.baseUrl = Endpoints.baseUrl
       ..options.receiveDataWhenStatusError = true
-      ..options.connectTimeout = 120 * 1000 // 60 seconds
-      ..options.receiveTimeout = 120 * 1000 // 60 seconds
+      ..options.connectTimeout = 30 * 1000 // 30 seconds
+      ..options.receiveTimeout = 30 * 1000 // 30 seconds
       ..options.headers = {
         'Accept': "application/json",
         'Content-Type': "application/json",

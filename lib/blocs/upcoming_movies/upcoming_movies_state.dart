@@ -15,11 +15,14 @@ class UpcomingMoviesInitState extends UpcomingMoviesState {
 }
 
 class LoadUpcomingMoviesState extends UpcomingMoviesState {
-  final List<UpcomingMoviesModel>? upcomingMovieList;
+  final List<MoviesModel>? movieList;
   final bool? isLastPage;
   final int? nextPageKey;
 
-  LoadUpcomingMoviesState({required this.upcomingMovieList,required this.isLastPage, required this.nextPageKey});
+  LoadUpcomingMoviesState(
+      {required this.movieList,
+      required this.isLastPage,
+      required this.nextPageKey});
 
   @override
   List<Object> get props => [];
@@ -42,15 +45,15 @@ class UpcomingMoviesErrorState extends UpcomingMoviesState {
   List<Object> get props => [errorMsg];
 }
 
-class ShowProgressState extends UpcomingMoviesState {
-  const ShowProgressState();
+class MoviesShowProgressState extends UpcomingMoviesState {
+  const MoviesShowProgressState();
 
   @override
   List<Object> get props => [];
 }
 
-class HideProgressState extends UpcomingMoviesState {
-  const HideProgressState();
+class MoviesHideProgressState extends UpcomingMoviesState {
+  const MoviesHideProgressState();
 
   @override
   List<Object> get props => [];
