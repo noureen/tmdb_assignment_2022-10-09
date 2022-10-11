@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:the_movies_db_app/constants/endpoints.dart';
 import '../../../constants/constants.dart';
@@ -11,7 +10,7 @@ import '../../../styles/styles.dart';
 class MovieListItem extends StatelessWidget {
   final MoviesModel? movie;
 
-  MovieListItem({Key? key, required this.movie}) : super(key: key);
+  const MovieListItem({Key? key, required this.movie}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,7 @@ class MovieListItem extends StatelessWidget {
             ),
             child: Stack(
               alignment: Alignment.bottomLeft,
-              children: [_buildImage(orientation, context), text],
+              children: [_buildImage(MediaQuery.of(context).orientation, context), text],
             ),
           ));
     });

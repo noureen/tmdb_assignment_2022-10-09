@@ -8,10 +8,11 @@ import 'package:the_movies_db_app/constants/constants.dart';
 import 'package:the_movies_db_app/utils/utility.dart';
 import '../styles/styles.dart';
 
+//All three pages have different top bar so I have used enums from which I am differentiating widgets types
 enum SearchType {
-  watch,
-  search,
-  genre,
+  watch,//watch/dashboard page
+  search,//search page
+  genre,// genre page
 }
 
 class HeaderAppBar extends StatefulWidget {
@@ -31,11 +32,12 @@ class _HeaderAppBarState extends State<HeaderAppBar> {
     // TODO: implement initState
     super.initState();
 
+    //if search page then search controller is declare
     _searchQueryController = TextEditingController()
       ..addListener(() {
         final query = _searchQueryController?.text.toString();
-        BlocProvider.of<SearchMovieBloc>(context).add(SearchMovieInitEvent());
-        BlocProvider.of<SearchMovieBloc>(context).add(QueryEvent(query: query));
+        BlocProvider.of<SearchMovieBloc>(context).add(SearchMovieInitEvent());//Here I am first reseting the page
+        BlocProvider.of<SearchMovieBloc>(context).add(QueryEvent(query: query)); // then calling to set query
       });
   }
 
@@ -69,18 +71,39 @@ class _HeaderAppBarState extends State<HeaderAppBar> {
         ),
       );
 
-  Widget get genre => Container(
-      width: double.infinity,
-      height: 60.0,
-      padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-      child: Center(
-        child: InkWell(
-            onTap: () {
-              debugPrint('sadkalsjdkljas');
-              Get.toNamed('/search');
-            },
-            child: searchField),
-      ));
+  Widget get genre => InkWell(
+        onTap: () {
+          Get.toNamed('/search');
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+            width: double.infinity,
+            height: 6.0.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24.0),
+              color: lightGrey,
+            ),
+            child: TextButton.icon(
+                onPressed: null,
+                icon: Icon(
+                  Icons.search,
+                  size: 3.0.h,
+                ),
+                label: Text(
+                  strSearchTvShows,
+                  style: TextStyle(
+                      fontWeight: weight400,
+                      fontStyle: FontStyle.normal,
+                      fontSize: 16.0.sp,
+                      color: grey,
+                      fontFamily: 'PoppinsRegular'),
+                )),
+          ),
+        ),
+      );
 
   Widget get search => Container(
       width: double.infinity,
