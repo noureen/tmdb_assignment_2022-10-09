@@ -18,12 +18,12 @@ abstract class NetworkModule {
         'Content-Type': "application/json",
       }
       ..interceptors.add(LogInterceptor(
-        error: true,
-        responseHeader: true,
-        request: true,
-        responseBody: true,
-        requestBody: true,
-        requestHeader: true,
+        error: false,
+        responseHeader: false,
+        request: false,
+        responseBody: false,
+        requestBody: false,
+        requestHeader: false,
       ));
 
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
